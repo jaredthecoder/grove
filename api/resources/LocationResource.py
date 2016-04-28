@@ -51,7 +51,7 @@ class LocationResource(Resource):
                                    description=parsed_args['description'],
                                    user_uuid=parsed_args['user_id'],
                                    photo=parsed_args['photo'],
-                                   id=str(uuid.uuid4()))
+                                   uuid=str(uuid.uuid4()))
 
         location.save()
 
