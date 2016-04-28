@@ -87,66 +87,71 @@ class FacebookLoginCallbackResource(Resource):
 
     def get(self, provider_name):
         current_app.logger.error('In GET')
-        if 'state' in session and session['state'] == request.args.get('state'):
-            code = request.args.get('code')
+        if 'state' in session:
+            if session['state'] == request.args.get('state'):
+                code = request.args.get('code')
 
-            redirect_uri = 'https://grove-api.herokuapp.com/login/facebook/callback'
+                redirect_uri = 'https://grove-api.herokuapp.com/login/facebook/callback'
 
-            params = {
-                'client_id': social_config[provider_name]['consumer_key'],
-                'redirect_uri': redirect_uri,
-                'client_secret': social_config[provider_name]['consumer_secret'],
-                'code': code
-            }
+                params = {
+                    'client_id': social_config[provider_name]['consumer_key'],
+                    'redirect_uri': redirect_uri,
+                    'client_secret': social_config[provider_name]['consumer_secret'],
+                    'code': code
+                }
 
-            resp = requests.get('https://graph.facebook.com/' +
-                                'v2.4/oauth/access_token', params=params)
+                resp = requests.get('https://graph.facebook.com/' +
+                                    'v2.4/oauth/access_token', params=params)
 
-            try:
-                data = json.loads(resp.text)
-            except ValueError:
-                return redirect('grove://login_error?' +
-                                'message=unable+to+load+json+i' +
-                                'from+access+token+validation')
+                try:
+                    data = json.loads(resp.text)
+                except ValueError:
+                    return redirect('grove://login_error?' +
+                                    'message=unable+to+load+json+i' +
+                                    'from+access+token+validation')
 
-            access_token = data['access_token']
-            user_id = self.validate_token(access_token)
-            if user_id is not None:
-                existing_user = User.objects(facebook_id=user_id).first()
-                if existing_user is None:
-                    user_data = self.get_user_data(user_id, access_token)
-                    if not user_data:
-                        return redirect('grove://login_error?' +
-                                        'message=unable+to+parse+user+data')
+                access_token = data['access_token']
+                user_id = self.validate_token(access_token)
+                if user_id is not None:
+                    existing_user = User.objects(facebook_id=user_id).first()
+                    if existing_user is None:
+                        user_data = self.get_user_data(user_id, access_token)
+                        if not user_data:
+                            return redirect('grove://login_error?' +
+                                            'message=unable+to+parse+user+data')
 
-                    new_user = User(facebook_id=user_id,
-                                    first_name=user_data['first_name'],
-                                    last_name=user_data['last_name'],
-                                    email=user_data['email'],
-                                    photo=user_data['profile_photo_url'],
-                                    facebook_access_token=access_token)
-                    auth_token = new_user.generate_auth_token()
-                    new_user.auth_token = auth_token.decode('ascii')
+                        new_user = User(facebook_id=user_id,
+                                        first_name=user_data['first_name'],
+                                        last_name=user_data['last_name'],
+                                        email=user_data['email'],
+                                        photo=user_data['profile_photo_url'],
+                                        facebook_access_token=access_token)
+                        auth_token = new_user.generate_auth_token()
+                        new_user.auth_token = auth_token.decode('ascii')
 
-                    new_user.save()
+                        new_user.save()
 
-                    return redirect('grove://signup/' +
-                                    '{id}/{auth_token}?first_name={first_name}&last_name={last_name}'.format(
-                                    id=new_user.uuid,
-                                    auth_token=new_user.auth_token,
-                                    first_name=new_user.first_name,
-                                    last_name=new_user.last_name) +
-                                    '&photo={photo}'.format(
-                                    photo=new_user.photo))
-                else:
-                    return redirect('grove://login/' +
-                                    '{id}/{auth_token}?first_name={first_name}&last_name={last_name}'.format(
-                                    id=existing_user.uuid,
-                                    auth_token=existing_user.auth_token,
-                                    first_name=existing_user.first_name,
-                                    last_name=existing_user.last_name) +
-                                    '&photo={photo}'.format(
-                                    photo=existing_user.photo))
+                        return redirect('grove://signup/' +
+                                        '{id}/{auth_token}?first_name={first_name}&last_name={last_name}'.format(
+                                        id=new_user.uuid,
+                                        auth_token=new_user.auth_token,
+                                        first_name=new_user.first_name,
+                                        last_name=new_user.last_name) +
+                                        '&photo={photo}'.format(
+                                        photo=new_user.photo))
+                    else:
+                        return redirect('grove://login/' +
+                                        '{id}/{auth_token}?first_name={first_name}&last_name={last_name}'.format(
+                                        id=existing_user.uuid,
+                                        auth_token=existing_user.auth_token,
+                                        first_name=existing_user.first_name,
+                                        last_name=existing_user.last_name) +
+                                        '&photo={photo}'.format(
+                                        photo=existing_user.photo))
+            else:
+                current_app.logger.error('session state does not match what is'+
+                                         'in session request')
+                return {'message': 'session state and session request do not match'}
         else:
             current_app.logger.error('State not in session')
             return {'message': 'state not in session'}
