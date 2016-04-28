@@ -1,0 +1,4 @@
+#!/bin/zsh
+# This hook is sourced after this virtualenv is activated.
+
+export WHERENO_SETTINGS="api.settings.DevConfig"
