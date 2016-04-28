@@ -21,7 +21,7 @@ class LoginResource(Resource):
         redirect_uri = None
 
         redirect_uri = 'https://grove-api.herokuapp.com/login/facebook/callback'
-        scope = ','.join(social_config[provider_name][scope])
+        scope = ','.join(social_config[provider_name]['scope'])
 
         session['state'] = uuid.uuid4()
         return redirect('https://www.facebook.com/dialog/oauth?' +
@@ -138,9 +138,9 @@ class FacebookLoginCallbackResource(Resource):
                 else:
                     return redirect('grove://login/' +
                                     '{id}/{auth_token}?first_name={first_name}&last_name={last_name}'.format(
-                                    id=new_user.uuid,
-                                    auth_token=new_user.auth_token,
-                                    first_name=new_user.first_name,
-                                    last_name=new_user.last_name) +
+                                    id=existing_user.uuid,
+                                    auth_token=existing_user.auth_token,
+                                    first_name=existing_user.first_name,
+                                    last_name=existing_user.last_name) +
                                     '&photo={photo}'.format(
-                                    photo=new_user.profile_photo_url))
+                                    photo=existing_user.profile_photo_url))
