@@ -62,6 +62,7 @@ class HammockLocation(Document):
 class User(Document):
     uuid = StringField()
     facebook_id = StringField()
+    facebook_access_token = StringField()
     first_name = StringField()
     last_name = StringField()
     photo = StringField()
