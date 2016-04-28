@@ -11,6 +11,7 @@ class Config(object):
     TESTING = False
     APP_DIR = os.path.abspath(os.path.dirname(__file__))
     PROJECT_ROOT = os.path.abspath(os.path.join(APP_DIR, os.pardir))
+    SECRET_KEY = str(os.environ.get('SECRET_KEY'))
 
     # Local Settings
     """MONGODB_DB = os.environ.get('WHERENO_DB', 'whereno')
@@ -21,9 +22,7 @@ class Config(object):
 
     # Cloud Settings
     MONGODB_DB = str(os.environ.get('MONGODB_DB'))
-    print(MONGODB_DB)
     MONGODB_HOST = str(os.environ.get('MONGODB_HOST'))
-    print(MONGODB_HOST)
 
 
 class ProdConfig(Config):
