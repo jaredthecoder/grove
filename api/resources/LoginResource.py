@@ -7,7 +7,7 @@ import uuid
 
 # Third Party modules
 import requests
-from flask import request, redirect, session, current_app
+from flask import request, redirect, session, current_app, abort
 from flask.ext.restful import Resource
 
 from api.utils import social_config
@@ -86,10 +86,9 @@ class FacebookLoginCallbackResource(Resource):
         return user_data
 
     def get(self, provider_name):
-        current_app.logger.error('In GET')
         if 'state' in session:
-            current_app.logger.error('Session state: ' + str(session['state']))
-            current_app.logger.error('Session args state: ' + str(request.args.get('state')))
+            current_app.logger.debug('Session state: ' + str(session['state']))
+            current_app.logger.debug('Session args state: ' + str(request.args.get('state')))
             if str(session['state']) == str(request.args.get('state')):
                 code = request.args.get('code')
 
@@ -154,7 +153,7 @@ class FacebookLoginCallbackResource(Resource):
             else:
                 current_app.logger.error('session state does not match what is'+
                                          'in session request')
-                return {'message': 'session state and session request do not match'}
+                abort(401)
         else:
             current_app.logger.error('State not in session')
-            return {'message': 'state not in session'}
+            abort(401)
