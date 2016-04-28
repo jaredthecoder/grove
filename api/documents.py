@@ -13,7 +13,7 @@ from mongoengine import StringField, DateTimeField
 
 
 def gen_uuid():
-    return uuid.uuid4()
+    return str(uuid.uuid4())
 
 
 class Comment(EmbeddedDocument):
