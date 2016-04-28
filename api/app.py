@@ -45,7 +45,13 @@ def register_endpoints():
     from api.resources.LocationResource import LocationResource
     from api.resources.FeedResource import FeedResource
     from api.resources.CommentResource import CommentResource
+    from api.resources.LoginResource import LoginResource
+    from api.resources.LoginResource import FacebookLoginCallbackResource
 
+    api.add_resource(LoginResource,
+                                    '/login/facebook')
+    api.add_resource(FacebookLoginCallbackResource,
+                                    '/login/facebook/callback')
     api.add_resource(RootResource, '/')
     api.add_resource(LocationResource, '/location/<string:location_uuid>',
                      '/location')

@@ -5,9 +5,12 @@
 import datetime
 import uuid
 
+from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 from mongoengine import Document, EmbeddedDocument, EmbeddedDocumentListField
 from mongoengine import GeoPointField, IntField
 from mongoengine import StringField, DateTimeField
+
+from api.settings import Config
 
 
 class Comment(EmbeddedDocument):
@@ -58,6 +61,11 @@ class HammockLocation(Document):
 
 class User(Document):
     uuid = StringField(default=str(uuid.uuid4()))
+    facebook_id = StringField()
+    first_name = StringField()
+    last_name = StringField()
+    photo = StringField()
+    email = StringField()
     auth_token = StringField()
     date_created = DateTimeField(default=datetime.datetime.now())
 
@@ -65,6 +73,23 @@ class User(Document):
         data = dict()
         data["date_created"] = self.date_created.strftime("%Y-%m-%d %H:%M:%S")
         data["id"] = self.uuid
+        data["first_name"] = self.first_name
+        data["last_name"] = self.last_name
+        data["photo"] = self.photo
         data["auth_token"] = self.auth_token
         return data
 
+    def generate_auth_token(self, expiration=1000000):
+        s = Serializer(Config.SECRET_KEY, expires_in=expiration)
+        return s.dumps({'id': self.uuid})
+
+    def verify_auth_token(token):
+        s = Serializer(Config.SECRET_KEY)
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            return None # valid token, but expired
+        except BadSignature:
+            return None # invalid token
+        user = User.objects(uuid=data['uuid']).first()
+        return user

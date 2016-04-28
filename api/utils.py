@@ -1,5 +1,6 @@
 """utils.py - Module containing various utility functions"""
 
+import os
 import urllib.request
 
 from flask.ext.restful import abort
@@ -41,7 +42,13 @@ def require_login(func):
 
 
 # External OAuth Configs
-social_config = {}
+social_config = {
+    'facebook': {
+        'consumer_key': str(os.environ.get('FB_CONSUMER_KEY')),
+        'consumer_secret': str(os.environ.get('FB_CONSUMER_SECRET')),
+        'scope': ['public_profile', 'user_friends', 'email'],
+    }
+}
 
 
 def abort_not_exist(_id, _type):
