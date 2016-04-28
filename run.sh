@@ -1,3 +1,3 @@
 #!/bin/sh
 
-gunicorn "api.app:create_app()" --log-file=- --timeout 10 --reload
+gunicorn "api:app" --log-file=- --timeout 10 --reload
