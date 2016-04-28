@@ -5,6 +5,7 @@
 import binascii
 import datetime
 import os
+import uuid
 
 from mongoengine import Document, EmbeddedDocument, EmbeddedDocumentListField
 from mongoengine import GeoPointField, IntField
@@ -12,7 +13,7 @@ from mongoengine import StringField, DateTimeField
 
 
 def gen_uuid():
-    return binascii.hexlify(os.urandom(16)).decode('utf-8')
+    return uuid.uuid4()
 
 
 class Comment(EmbeddedDocument):
