@@ -107,6 +107,7 @@ class FacebookLoginCallbackResource(Resource):
 
                 try:
                     data = json.loads(resp.text)
+                    current_app.logger.error('Data: ' + str(data))
                 except ValueError:
                     return redirect('grove://login_error?' +
                                     'message=unable+to+load+json+i' +
