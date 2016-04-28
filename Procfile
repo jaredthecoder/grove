@@ -1,1 +1,1 @@
-web: gunicorn "api:app" --log-file=- --timeout 10 --preload
+web: gunicorn --log-file=- "api:app" --timeout 10 --preload
