@@ -7,7 +7,7 @@ import uuid
 
 # Third Party modules
 import requests
-from flask import request, redirect, session
+from flask import request, redirect, session, current_app
 from flask.ext.restful import Resource
 
 from api.utils import social_config
@@ -47,12 +47,14 @@ class FacebookLoginCallbackResource(Resource):
         try:
             data = json.loads(resp.text)
         except ValueError:
+            current_app.error('could not load data')
             return None
 
         if 'id' in data:
             return data['id']
         else:
-            return {'message': 'id not in data'}
+            current_app.error('id not in data')
+            return None
 
     def get_user_data(self, user_id, access_token):
         user_data = {}
@@ -68,7 +70,8 @@ class FacebookLoginCallbackResource(Resource):
         try:
             data = json.loads(resp.text)
         except ValueError:
-            return {'message': 'Loading json data for getting user data failed'}
+            current_app.error('Loading json data for getting user data failed')
+            return None
 
         if 'id' in data:
             user_data['id'] = data['id']
@@ -79,7 +82,8 @@ class FacebookLoginCallbackResource(Resource):
             user_data['profile_photo_url'] = \
                 self.get_canonical_facebook_profile_pic_url(user_id)
         else:
-            return {'message': 'User id was blank, returning None from get user data'}
+            current_app.error('User id was blank, returning None from get user data')
+            return None
 
         return user_data
 
