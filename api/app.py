@@ -25,6 +25,10 @@ def create_app(config_object=ProdConfig, static_path=''):
                        'declared. Please declare it to point to the ' +
                        'application configs..')
 
+    app.config['MONGODB_SETTINGS'] = {
+            'db': os.environ.get('MONGODB_DB'),
+            'host': os.environ.get('MONGODB_URI')
+        }
     register_extensions(app)
     register_mongo(app)
     register_api(app)
