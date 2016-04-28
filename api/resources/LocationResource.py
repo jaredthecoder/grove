@@ -5,6 +5,8 @@ from flask.ext.restful import Resource, reqparse
 from api.documents import HammockLocation
 from api.utils import abort_not_exist
 
+import uuid
+
 
 class LocationResource(Resource):
     """Location Resource class"""
