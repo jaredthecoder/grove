@@ -88,6 +88,8 @@ class FacebookLoginCallbackResource(Resource):
     def get(self, provider_name):
         current_app.logger.error('In GET')
         if 'state' in session:
+            current_app.logger.error('Session state: ' + str(session['state']))
+            current_app.logger.error('Session args state: ' + str(request.args.get('state')))
             if session['state'] == request.args.get('state'):
                 code = request.args.get('code')
 
