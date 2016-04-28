@@ -21,7 +21,7 @@ class LoginResource(Resource):
         redirect_uri = None
 
         redirect_uri = 'https://grove-api.herokuapp.com/login/facebook/callback'
-        scope = ','.join(social_config[provider_name]['scope'])
+        scope = ','.join(social_config[provider_name][scope])
 
         session['state'] = uuid.uuid4()
         return redirect('https://www.facebook.com/dialog/oauth?' +

@@ -49,9 +49,9 @@ def register_endpoints():
     from api.resources.LoginResource import FacebookLoginCallbackResource
 
     api.add_resource(LoginResource,
-                                    '/login/facebook')
+                     '/login/<string:provider_name>')
     api.add_resource(FacebookLoginCallbackResource,
-                                    '/login/facebook/callback')
+                     '/login/<string:provider_name>/callback')
     api.add_resource(RootResource, '/')
     api.add_resource(LocationResource, '/location/<string:location_uuid>',
                      '/location')
