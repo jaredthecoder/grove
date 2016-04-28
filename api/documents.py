@@ -12,12 +12,8 @@ from mongoengine import GeoPointField, IntField
 from mongoengine import StringField, DateTimeField
 
 
-def gen_uuid():
-    return str(uuid.uuid4())
-
-
 class Comment(EmbeddedDocument):
-    uuid = StringField(default=gen_uuid())
+    uuid = StringField()
     text = StringField()
     date_created = DateTimeField(default=datetime.datetime.now())
     user_uuid = StringField()
@@ -34,7 +30,7 @@ class Comment(EmbeddedDocument):
 
 
 class HammockLocation(Document):
-    uuid = StringField(default=gen_uuid())
+    uuid = StringField()
     title = StringField()
     capacity = IntField()
     photo = StringField()
@@ -63,7 +59,7 @@ class HammockLocation(Document):
 
 
 class User(Document):
-    uuid = StringField(default=gen_uuid())
+    uuid = StringField()
     auth_token = StringField()
     date_created = DateTimeField(default=datetime.datetime.now())
 
