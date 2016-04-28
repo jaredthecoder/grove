@@ -89,7 +89,6 @@ class FacebookLoginCallbackResource(Resource):
         current_app.logger.error('In GET')
         if 'state' in session and session['state'] == request.args.get('state'):
             code = request.args.get('code')
-            redirect_uri = None
 
             redirect_uri = 'https://grove-api.herokuapp.com/login/facebook/callback'
 
@@ -148,6 +147,6 @@ class FacebookLoginCallbackResource(Resource):
                                     last_name=existing_user.last_name) +
                                     '&photo={photo}'.format(
                                     photo=existing_user.photo))
-            else:
-                current_app.logger.error('State not in session')
-                return {'message': 'state not in session'}
+        else:
+            current_app.logger.error('State not in session')
+            return {'message': 'state not in session'}
