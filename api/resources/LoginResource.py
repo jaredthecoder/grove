@@ -18,8 +18,6 @@ class LoginResource(Resource):
     """Resource for handling logins"""
 
     def get(self, provider_name):
-        redirect_uri = None
-
         redirect_uri = 'https://grove-api.herokuapp.com/login/facebook/callback'
         scope = ','.join(social_config[provider_name]['scope'])
 
@@ -47,13 +45,13 @@ class FacebookLoginCallbackResource(Resource):
         try:
             data = json.loads(resp.text)
         except ValueError:
-            current_app.error('could not load data')
+            current_app.logger.error('could not load data')
             return None
 
         if 'id' in data:
             return data['id']
         else:
-            current_app.error('id not in data')
+            current_app.logger.error('id not in data')
             return None
 
     def get_user_data(self, user_id, access_token):
@@ -70,7 +68,7 @@ class FacebookLoginCallbackResource(Resource):
         try:
             data = json.loads(resp.text)
         except ValueError:
-            current_app.error('Loading json data for getting user data failed')
+            current_app.logger.error('Loading json data for getting user data failed')
             return None
 
         if 'id' in data:
@@ -82,7 +80,7 @@ class FacebookLoginCallbackResource(Resource):
             user_data['profile_photo_url'] = \
                 self.get_canonical_facebook_profile_pic_url(user_id)
         else:
-            current_app.error('User id was blank, returning None from get user data')
+            current_app.logger.error('User id was blank, returning None from get user data')
             return None
 
         return user_data
@@ -121,9 +119,12 @@ class FacebookLoginCallbackResource(Resource):
                         return redirect('grove://login_error?' +
                                         'message=unable+to+parse+user+data')
 
-                    new_user = User(facebook_id=user_id, first_name=user_data['first_name'],
-                                    last_name=user_data['last_name'], email=user_data['email'],
-                                    photo=user_data['profile_photo_url'], facebook_access_token=access_token)
+                    new_user = User(facebook_id=user_id,
+                                    first_name=user_data['first_name'],
+                                    last_name=user_data['last_name'],
+                                    email=user_data['email'],
+                                    photo=user_data['profile_photo_url'],
+                                    facebook_access_token=access_token)
                     auth_token = new_user.generate_auth_token()
                     new_user.auth_token = auth_token.decode('ascii')
 
@@ -136,7 +137,7 @@ class FacebookLoginCallbackResource(Resource):
                                     first_name=new_user.first_name,
                                     last_name=new_user.last_name) +
                                     '&photo={photo}'.format(
-                                    photo=new_user.profile_photo_url))
+                                    photo=new_user.photo))
                 else:
                     return redirect('grove://login/' +
                                     '{id}/{auth_token}?first_name={first_name}&last_name={last_name}'.format(
@@ -145,4 +146,4 @@ class FacebookLoginCallbackResource(Resource):
                                     first_name=existing_user.first_name,
                                     last_name=existing_user.last_name) +
                                     '&photo={photo}'.format(
-                                    photo=existing_user.profile_photo_url))
+                                    photo=existing_user.photo))
