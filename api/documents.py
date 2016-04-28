@@ -14,7 +14,7 @@ from api.settings import Config
 
 
 class Comment(EmbeddedDocument):
-    uuid = StringField(default=str(uuid.uuid4()))
+    uuid = StringField()
     text = StringField()
     date_created = DateTimeField(default=datetime.datetime.now())
     user_uuid = StringField()
@@ -31,7 +31,7 @@ class Comment(EmbeddedDocument):
 
 
 class HammockLocation(Document):
-    uuid = StringField(default=str(uuid.uuid4()))
+    uuid = StringField()
     title = StringField()
     capacity = IntField()
     photo = StringField()
@@ -60,7 +60,7 @@ class HammockLocation(Document):
 
 
 class User(Document):
-    uuid = StringField(default=str(uuid.uuid4()))
+    uuid = StringField()
     facebook_id = StringField()
     first_name = StringField()
     last_name = StringField()

@@ -42,7 +42,8 @@ class CommentResource(Resource):
 
         comment = Comment(text=parsed_args['text'],
                           location_uuid=parsed_args['location_id'],
-                          user_uuid=parsed_args['user_id'])
+                          user_uuid=parsed_args['user_id'],
+                          uuid=str(uuid.uuid4()))
 
         HammockLocation.objects(
             uuid=parsed_args['location_id']).update_one(push__comments=comment)
