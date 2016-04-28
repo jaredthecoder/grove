@@ -50,8 +50,7 @@ class LocationResource(Resource):
                                         parsed_args['longitude']],
                                    description=parsed_args['description'],
                                    user_uuid=parsed_args['user_id'],
-                                   photo=parsed_args['photo'],
-                                   uuid=str(uuid.uuid4()))
+                                   photo=parsed_args['photo'])
 
         location.save()
 

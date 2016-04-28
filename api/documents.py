@@ -2,9 +2,7 @@
 
 
 # Python Standard Library
-import binascii
 import datetime
-import os
 import uuid
 
 from mongoengine import Document, EmbeddedDocument, EmbeddedDocumentListField
@@ -13,7 +11,7 @@ from mongoengine import StringField, DateTimeField
 
 
 class Comment(EmbeddedDocument):
-    uuid = StringField()
+    uuid = StringField(default=str(uuid.uuid4()))
     text = StringField()
     date_created = DateTimeField(default=datetime.datetime.now())
     user_uuid = StringField()
@@ -30,7 +28,7 @@ class Comment(EmbeddedDocument):
 
 
 class HammockLocation(Document):
-    uuid = StringField()
+    uuid = StringField(default=str(uuid.uuid4()))
     title = StringField()
     capacity = IntField()
     photo = StringField()
@@ -59,7 +57,7 @@ class HammockLocation(Document):
 
 
 class User(Document):
-    uuid = StringField()
+    uuid = StringField(default=str(uuid.uuid4()))
     auth_token = StringField()
     date_created = DateTimeField(default=datetime.datetime.now())
 
