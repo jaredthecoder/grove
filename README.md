@@ -1,8 +1,11 @@
 # Grove
 
-## Overview:
-- Backend for https://github.com/kylebshr/grove
+Crowd-sourced hammock locations
 
-## Architecture Overview:
-- REST API Framework: <http://flask-restful-cn.readthedocs.org/en/0.3.4/>
+### Overview:
+- Backend for https://github.com/kylebshr/grove.
 
+### Architecture Overview:
+- Python
+- Flask
+- MongoDB
