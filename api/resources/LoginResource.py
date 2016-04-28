@@ -52,7 +52,7 @@ class FacebookLoginCallbackResource(Resource):
         if 'id' in data:
             return data['id']
         else:
-            return None
+            return {'message': 'id not in data'}
 
     def get_user_data(self, user_id, access_token):
         user_data = {}
@@ -68,8 +68,7 @@ class FacebookLoginCallbackResource(Resource):
         try:
             data = json.loads(resp.text)
         except ValueError:
-            print('Loading json data for getting user data failed')
-            return None
+            return {'message': 'Loading json data for getting user data failed'}
 
         if 'id' in data:
             user_data['id'] = data['id']
@@ -80,8 +79,7 @@ class FacebookLoginCallbackResource(Resource):
             user_data['profile_photo_url'] = \
                 self.get_canonical_facebook_profile_pic_url(user_id)
         else:
-            print('User id was blank, returning None from get user data')
-            return None
+            return {'message': 'User id was blank, returning None from get user data'}
 
         return user_data
 
