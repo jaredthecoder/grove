@@ -147,3 +147,6 @@ class FacebookLoginCallbackResource(Resource):
                                     last_name=existing_user.last_name) +
                                     '&photo={photo}'.format(
                                     photo=existing_user.photo))
+            else:
+                current_app.logger.error('State not in session')
+                return {'message': 'state not in session'}
