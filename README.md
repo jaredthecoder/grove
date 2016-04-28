@@ -1,6 +1,6 @@
 # Grove
 
-Crowd-sourced hammock locations
+Crowd-sourced hammock locations.
 
 ### Overview:
 - Backend for https://github.com/kylebshr/grove.
