@@ -86,6 +86,7 @@ class FacebookLoginCallbackResource(Resource):
         return user_data
 
     def get(self, provider_name):
+        current_app.logger.error('In GET')
         if 'state' in session and session['state'] == request.args.get('state'):
             code = request.args.get('code')
             redirect_uri = None
