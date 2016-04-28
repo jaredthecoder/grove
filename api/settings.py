@@ -19,6 +19,10 @@ class Config(object):
     MONGODB_USERNAME = os.environ.get('WHERENO_USERNAME', 'whereno')
     MONGODB_PASSWORD = os.environ.get('WHERENO_PASSWORD', 'whereno')"""
 
+    # Cloud Settings
+    MONGODB_DB = os.environ.get('MONGODB_DB')
+    MONGODB_HOST = os.environ.get('MONGODB_HOST')
+
 
 class ProdConfig(Config):
     """Production configuration."""
