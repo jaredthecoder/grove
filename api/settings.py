@@ -21,7 +21,9 @@ class Config(object):
 
     # Cloud Settings
     MONGODB_DB = str(os.environ.get('MONGODB_DB'))
+    print(MONGODB_DB)
     MONGODB_HOST = str(os.environ.get('MONGODB_HOST'))
+    print(MONGODB_HOST)
 
 
 class ProdConfig(Config):
