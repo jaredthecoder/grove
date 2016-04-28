@@ -16,7 +16,6 @@ Flask-Login==0.3.2
 Flask-Mail==0.9.1
 Flask-Migrate==1.8.0
 flask-mongoengine==0.7.5
-Flask-MongoKit==0.6
 Flask-OAuthlib==0.9.1
 Flask-Principal==0.4.0
 Flask-RESTful==0.3.4
@@ -33,11 +32,9 @@ Mako==1.0.2
 MarkupSafe==0.23
 mixer==5.2.2
 mongoengine==0.10.6
-mongokit==0.9.1.1
 oauthlib==1.0.3
 paramiko==1.15.2
 passlib==1.6.5
-psycopg2==2.6.1
 py==1.4.30
 pycparser==2.14
 pycrypto==2.6.1
@@ -53,6 +50,4 @@ requests-oauthlib==0.5.0
 six==1.9.0
 SQLAlchemy==1.0.12
 Werkzeug==0.10.4
-wheel==0.24.0
-whereno==0.0.1
 WTForms==2.0.2
