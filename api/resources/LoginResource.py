@@ -90,7 +90,7 @@ class FacebookLoginCallbackResource(Resource):
         if 'state' in session:
             current_app.logger.error('Session state: ' + str(session['state']))
             current_app.logger.error('Session args state: ' + str(request.args.get('state')))
-            if session['state'] == request.args.get('state'):
+            if str(session['state']) == str(request.args.get('state')):
                 code = request.args.get('code')
 
                 redirect_uri = 'https://grove-api.herokuapp.com/login/facebook/callback'
