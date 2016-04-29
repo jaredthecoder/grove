@@ -1,9 +1,10 @@
 """FeedResource.py"""
 
 
-from flask.ext.restful import Resource, reqparse
+from flask.ext.restful import Resource, reqparse, current_app
 
 from api.documents import HammockLocation
+from api.utils import require_login
 
 
 class FeedResource(Resource):
@@ -26,7 +27,10 @@ class FeedResource(Resource):
                             default=20.0, type=float)"""
         return parser
 
-    def get(self):
+    @require_login
+    def get(self, user):
+        current_app.logger.debug(user.to_json())
+
         parser_args = self.get_parser.parse_args()
 
         latitude = parser_args['latitude']

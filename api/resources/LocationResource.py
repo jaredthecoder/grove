@@ -1,10 +1,10 @@
 """CommentResource.py"""
 
 
-from flask.ext.restful import Resource, reqparse
+from flask.ext.restful import Resource, reqparse, current_app
 
 from api.documents import HammockLocation
-from api.utils import abort_not_exist
+from api.utils import abort_not_exist, require_login
 
 import uuid
 
@@ -24,7 +24,6 @@ class LocationResource(Resource):
         parser.add_argument('longitude', required=True, type=float)
         parser.add_argument('photo', required=True, type=str)
         parser.add_argument('description', default=None, type=str)
-        parser.add_argument('user_id', required=True, type=str)
         return parser
 
     def setup_put_parser(self):
@@ -37,20 +36,24 @@ class LocationResource(Resource):
         parser.add_argument('description', default=None, type=str)
         return parser
 
-    def get(self, location_uuid=None):
+    @require_login
+    def get(self, user, location_uuid=None):
+        current_app.logger.debug(user.to_json())
         location = HammockLocation.objects(uuid=location_uuid).first()
         if location is None:
             abort_not_exist(location_uuid, 'HammockLocation')
         return location.to_json()
 
-    def post(self):
+    @require_login
+    def post(self, user):
+        current_app.logger.debug(user.to_json())
         parsed_args = self.post_parser.parse_args()
         location = HammockLocation(title=parsed_args['title'],
                                    capacity=parsed_args['capacity'],
                                    loc=[parsed_args['latitude'],
                                         parsed_args['longitude']],
                                    description=parsed_args['description'],
-                                   user_uuid=parsed_args['user_id'],
+                                   user_uuid=user.uuid,
                                    photo=parsed_args['photo'],
                                    uuid=str(uuid.uuid4()))
 
@@ -58,7 +61,9 @@ class LocationResource(Resource):
 
         return location.to_json()
 
-    def put(self, location_id=None):
+    @require_login
+    def put(self, user, location_id=None):
+        current_app.logger.debug(user.to_json())
         parsed_args = self.put_parser.parse_args()
 
         location = HammockLocation.objects(uuid=location_id).first()

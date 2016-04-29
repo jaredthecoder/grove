@@ -3,10 +3,10 @@
 
 import uuid
 
-from flask.ext.restful import Resource, reqparse
+from flask.ext.restful import Resource, reqparse, current_app
 
 from api.documents import Comment, HammockLocation
-from api.utils import abort_not_exist
+from api.utils import abort_not_exist, require_login
 
 
 class CommentResource(Resource):
@@ -20,7 +20,6 @@ class CommentResource(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('text', type=str)
         parser.add_argument('location_id', required=True, type=str)
-        parser.add_argument('user_id', required=True, type=str)
         return parser
 
     def setup_put_parser(self):
@@ -28,7 +27,9 @@ class CommentResource(Resource):
         parser.add_argument('text', required=True, type=str)
         return parser
 
-    def get(self, location_uuid):
+    @require_login
+    def get(self, user, location_uuid):
+        current_app.logger.debug(user.to_json())
         location = HammockLocation.objects(uuid=location_uuid).first()
         if location is None:
             abort_not_exist(location_uuid, 'Location')
@@ -39,12 +40,14 @@ class CommentResource(Resource):
 
         return encoded_comments
 
-    def post(self):
+    @require_login
+    def post(self, user):
+        current_app.logger.debug(user.to_json())
         parsed_args = self.post_parser.parse_args()
 
         comment = Comment(text=parsed_args['text'],
                           location_uuid=parsed_args['location_id'],
-                          user_uuid=parsed_args['user_id'],
+                          user_uuid=user.uuid,
                           uuid=str(uuid.uuid4()))
 
         HammockLocation.objects(
@@ -52,7 +55,9 @@ class CommentResource(Resource):
 
         return comment.to_json()
 
-    def put(self, comment_id=None):
+    @require_login
+    def put(self, user, comment_id=None):
+        current_app.logger.debug(user.to_json())
         parsed_args = self.put_parser.parse_args()
 
         comment = Comment.objects(uuid=comment_id).first()

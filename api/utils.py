@@ -10,13 +10,15 @@ from api.documents import User
 
 
 def parse_auth_header(auth_header):
+    if auth_header is None:
+        return None
     try:
         auth_type, param_strs = auth_header.split(" ", 1)
         items = urllib.request.parse_http_list(param_strs)
         opts = urllib.request.parse_keqv_list(items)
     except Exception as e:
         import traceback
-        traceback.print_exc(e)
+        traceback.print_exc()
         return None
     return opts
 
@@ -26,7 +28,7 @@ def require_login(func):
         auth_opts = parse_auth_header(request.headers.get('Authorization'))
         try:
             token = auth_opts['token']
-        except KeyError as e:
+        except (KeyError, TypeError) as e:
             abort(401)
             return
         user = User.objects(auth_token=token)
@@ -34,7 +36,9 @@ def require_login(func):
             current_app.logger.error(
                 'More than one user with id: {}'.format(token))
             abort(401)
-        if user is None:
+        if user is None or len(user) == 0:
+            current_app.logger.error(
+                "User for the given authorization token does not exist.")
             abort(401)
             return
 

@@ -76,7 +76,6 @@ class User(Document):
         data["first_name"] = self.first_name
         data["last_name"] = self.last_name
         data["photo"] = self.photo
-        data["auth_token"] = self.auth_token
         return data
 
     def generate_auth_token(self, expiration=1000000):

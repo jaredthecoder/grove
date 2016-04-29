@@ -47,10 +47,13 @@ def register_endpoints():
     from api.resources.CommentResource import CommentResource
     from api.resources.LoginResource import LoginResource
     from api.resources.LoginResource import FacebookLoginCallbackResource
+    from api.resources.UserResource import UserResource
 
     api.add_resource(LoginResource,
                      '/login/<string:provider_name>',
                      '/login/<string:provider_name>/')
+    api.add_resource(UserResource,
+                     '/user')
     api.add_resource(FacebookLoginCallbackResource,
                      '/login/<string:provider_name>/callback')
     api.add_resource(RootResource, '/')
