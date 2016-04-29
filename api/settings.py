@@ -13,13 +13,6 @@ class Config(object):
     PROJECT_ROOT = os.path.abspath(os.path.join(APP_DIR, os.pardir))
     SECRET_KEY = str(os.environ.get('SECRET_KEY'))
 
-    # Local Settings
-    """MONGODB_DB = os.environ.get('WHERENO_DB', 'whereno')
-    MONGODB_HOST = os.environ.get('WHERENO_HOST', 'localhost')
-    MONGODB_PORT = os.environ.get('WHERENO_PORT', 27017)
-    MONGODB_USERNAME = os.environ.get('WHERENO_USERNAME', 'whereno')
-    MONGODB_PASSWORD = os.environ.get('WHERENO_PASSWORD', 'whereno')"""
-
     # Cloud Settings
     MONGODB_DB = str(os.environ.get('MONGODB_DB'))
     MONGODB_HOST = str(os.environ.get('MONGODB_HOST'))
@@ -41,6 +34,13 @@ class DevConfig(Config):
     TESTING = True
     CACHE_TYPE = 'simple'
     BCRYPT_LOG_ROUNDS = 4
+
+    # Local Settings
+    MONGODB_DB = os.environ.get('GROVE_DB', 'grove')
+    MONGODB_HOST = os.environ.get('GROVE_HOST', 'localhost')
+    MONGODB_PORT = os.environ.get('GROVE_PORT', 27017)
+    MONGODB_USERNAME = os.environ.get('GROVE_USERNAME', 'grove')
+    MONGODB_PASSWORD = os.environ.get('GROVE_PASSWORD', 'grove')
 
 
 class TestConfig(Config):

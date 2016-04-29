@@ -1,5 +1,6 @@
 """CommentResource.py"""
 
+
 from flask.ext.restful import Resource, reqparse
 
 from api.documents import HammockLocation
@@ -53,7 +54,6 @@ class LocationResource(Resource):
                                    photo=parsed_args['photo'],
                                    uuid=str(uuid.uuid4()))
 
-
         location.save()
 
         return location.to_json()
@@ -63,8 +63,10 @@ class LocationResource(Resource):
 
         location = HammockLocation.objects(uuid=location_id).first()
 
-        if parsed_args['latitude'] is not None and parsed_args['longitude'] is not None:
-            location.loc.coordinates = [parsed_args['latitude'], parsed_args['longitude']]
+        if parsed_args['latitude'] is not None \
+                and parsed_args['longitude'] is not None:
+            location.loc.coordinates = \
+                [parsed_args['latitude'], parsed_args['longitude']]
 
         if parsed_args['title'] is not None:
             location.title = parsed_args['title']

@@ -1,5 +1,6 @@
 """FeedResource.py"""
 
+
 from flask.ext.restful import Resource, reqparse
 
 from api.documents import HammockLocation

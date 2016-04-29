@@ -19,9 +19,9 @@ def create_app(config_object=ProdConfig, static_path=''):
 
     app = Flask(__name__, static_url_path=static_path)
     try:
-        app.config.from_object(os.environ['WHERENO_SETTINGS'] or config_object)
+        app.config.from_object(os.environ['GROVE_SETTINGS'] or config_object)
     except KeyError:
-        raise KeyError('WHERENO_SETTINGS environment variable is not ' +
+        raise KeyError('GROVE_SETTINGS environment variable is not ' +
                        'declared. Please declare it to point to the ' +
                        'application configs..')
 

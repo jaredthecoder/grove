@@ -23,7 +23,8 @@ class LoginResource(Resource):
 
         session['state'] = uuid.uuid4()
         return redirect('https://www.facebook.com/dialog/oauth?' +
-                        'client_id={app_id}&redirect_uri={redirect_uri}&state={state}&scope={scope}'.format(
+                        'client_id={app_id}&redirect_uri={'
+                        'redirect_uri}&state={state}&scope={scope}'.format(
                             app_id=social_config[provider_name]['consumer_key'],
                             redirect_uri=redirect_uri, state=session['state'],
                             scope=scope))
@@ -68,7 +69,8 @@ class FacebookLoginCallbackResource(Resource):
         try:
             data = json.loads(resp.text)
         except ValueError:
-            current_app.logger.error('Loading json data for getting user data failed')
+            current_app.logger.error(
+                'Loading json data for getting user data failed')
             return None
 
         if 'id' in data:
@@ -80,25 +82,33 @@ class FacebookLoginCallbackResource(Resource):
             user_data['profile_photo_url'] = \
                 self.get_canonical_facebook_profile_pic_url(user_id)
         else:
-            current_app.logger.error('User id was blank, returning None from get user data')
+            current_app.logger.error(
+                'User id was blank, returning None from get user data')
             return None
 
         return user_data
 
     def get(self, provider_name):
         if 'state' in session:
-            current_app.logger.debug('Session state: ' + str(session['state']))
-            current_app.logger.debug('Session args state: ' + str(request.args.get('state')))
+            current_app.logger.debug(
+                'Session state: {0}'.format(str(session['state'])))
+            current_app.logger.debug('Session args state: {0}'.format(
+                str(request.args.get('state'))))
             if str(session['state']) == str(request.args.get('state')):
                 code = request.args.get('code')
 
-                redirect_uri = 'https://grove-api.herokuapp.com/login/facebook/callback'
+                redirect_uri = \
+                    'https://grove-api.herokuapp.com/login/facebook/callback'
 
                 params = {
-                    'client_id': social_config[provider_name]['consumer_key'],
-                    'redirect_uri': redirect_uri,
-                    'client_secret': social_config[provider_name]['consumer_secret'],
-                    'code': code
+                    'client_id':
+                        social_config[provider_name]['consumer_key'],
+                    'redirect_uri':
+                        redirect_uri,
+                    'client_secret':
+                        social_config[provider_name]['consumer_secret'],
+                    'code':
+                        code
                 }
 
                 resp = requests.get('https://graph.facebook.com/' +
@@ -134,25 +144,30 @@ class FacebookLoginCallbackResource(Resource):
                         new_user.save()
 
                         return redirect('grove://signup/' +
-                                        '{id}/{auth_token}?first_name={first_name}&last_name={last_name}'.format(
-                                        id=new_user.uuid,
-                                        auth_token=new_user.auth_token,
-                                        first_name=new_user.first_name,
-                                        last_name=new_user.last_name) +
+                                        '{id}/{auth_token}?first_name={'
+                                        'first_name}&last_name={'
+                                        'last_name}'.format(
+                                            id=new_user.uuid,
+                                            auth_token=new_user.auth_token,
+                                            first_name=new_user.first_name,
+                                            last_name=new_user.last_name) +
                                         '&photo={photo}'.format(
-                                        photo=new_user.photo))
+                                            photo=new_user.photo))
                     else:
                         return redirect('grove://login/' +
-                                        '{id}/{auth_token}?first_name={first_name}&last_name={last_name}'.format(
-                                        id=existing_user.uuid,
-                                        auth_token=existing_user.auth_token,
-                                        first_name=existing_user.first_name,
-                                        last_name=existing_user.last_name) +
+                                        '{id}/{auth_token}?first_name={'
+                                        'first_name}&last_name={'
+                                        'last_name}'.format(
+                                            id=existing_user.uuid,
+                                            auth_token=existing_user.auth_token,
+                                            first_name=existing_user.first_name,
+                                            last_name=existing_user.last_name) +
                                         '&photo={photo}'.format(
-                                        photo=existing_user.photo))
+                                            photo=existing_user.photo))
             else:
-                current_app.logger.error('session state does not match what is'+
-                                         'in session request')
+                current_app.logger.error(
+                    'session state does not match what is' +
+                    'in session request')
                 abort(401)
         else:
             current_app.logger.error('State not in session')

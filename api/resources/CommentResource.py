@@ -1,11 +1,13 @@
 """CommentResource.py"""
 
+
+import uuid
+
 from flask.ext.restful import Resource, reqparse
 
 from api.documents import Comment, HammockLocation
 from api.utils import abort_not_exist
 
-import uuid
 
 class CommentResource(Resource):
     """Comment Resource class"""

@@ -3,7 +3,7 @@
 import os
 import urllib.request
 
-from flask.ext.restful import abort
+from flask.ext.restful import abort, current_app
 from flask import request
 
 from api.documents import User
@@ -14,9 +14,9 @@ def parse_auth_header(auth_header):
         auth_type, param_strs = auth_header.split(" ", 1)
         items = urllib.request.parse_http_list(param_strs)
         opts = urllib.request.parse_keqv_list(items)
-    except:
+    except Exception as e:
         import traceback
-        traceback.print_exc()
+        traceback.print_exc(e)
         return None
     return opts
 
@@ -31,13 +31,14 @@ def require_login(func):
             return
         user = User.objects(auth_token=token)
         if len(user) > 1:
-            print('More than one user with id: {}'.format(token))
+            current_app.logger.error(
+                'More than one user with id: {}'.format(token))
             abort(401)
         if user is None:
             abort(401)
             return
 
-        return func(user=user, *args, **kwargs)
+        return func(user=user.first(), *args, **kwargs)
     return new_func
 
 

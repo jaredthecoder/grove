@@ -3,7 +3,6 @@
 
 # Python Standard Library
 import datetime
-import uuid
 
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 from mongoengine import Document, EmbeddedDocument, EmbeddedDocumentListField
