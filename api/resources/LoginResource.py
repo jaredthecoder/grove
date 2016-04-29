@@ -137,7 +137,8 @@ class FacebookLoginCallbackResource(Resource):
                                         last_name=user_data['last_name'],
                                         email=user_data['email'],
                                         photo=user_data['profile_photo_url'],
-                                        facebook_access_token=access_token)
+                                        facebook_access_token=access_token,
+                                        uuid=str(uuid.uuid4()))
                         auth_token = new_user.generate_auth_token()
                         new_user.auth_token = auth_token.decode('ascii')
 
