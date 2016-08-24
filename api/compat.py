@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
+
+
 """Python 2/3 compatibility module."""
 
+# Python standard libraries
 import sys
+
 
 PY2 = int(sys.version[0]) == 2
 

@@ -1,23 +1,25 @@
 # -*- coding: utf-8 -*-
 
 
+"""This file contains the application factory for making instances of the API"""
+
+# Python standard library
 import os
 
+# Third-Party modules
 from flask import Flask
 from flask.ext.restful import Api
 
-from api.extensions import bcrypt, cache, db
+# Project specific modules
+from api.extensions import bcrypt, cache, db, migrate
 from api.settings import ProdConfig
 
 
 def create_app(config_object=ProdConfig, static_path=''):
-    """An application factory, as explained here:
-        http://flask.pocoo.org/docs/patterns/appfactories/.
-
-    :param config_object: The configuration object to use.
-    """
+    """An application factory for this API."""
 
     app = Flask(__name__, static_url_path=static_path)
+
     try:
         app.config.from_object(os.environ['GROVE_SETTINGS'] or config_object)
     except KeyError:
@@ -25,12 +27,8 @@ def create_app(config_object=ProdConfig, static_path=''):
                        'declared. Please declare it to point to the ' +
                        'application configs..')
 
-    app.config['MONGODB_SETTINGS'] = {
-            'db': os.environ.get('MONGODB_DB'),
-            'host': os.environ.get('MONGODB_URI')
-        }
     register_extensions(app)
-    register_mongo(app)
+    register_database(app)
     register_api(app)
 
     return app
@@ -73,10 +71,11 @@ def register_api(app):
     api.init_app(app)
 
 
-def register_mongo(app):
-    """Register MongoKit documents."""
+def register_database(app):
+    """Register database and the migrate command."""
 
     db.init_app(app)
+    migrate.init_app(app)
 
 
 def register_extensions(app):

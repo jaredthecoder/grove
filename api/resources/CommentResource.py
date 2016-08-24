@@ -1,16 +1,34 @@
-"""CommentResource.py"""
+# -*- coding: utf-8 -*-
 
 
+"""HTTP resources for the comment entites."""
+
+
+# Python standard libraries
 import uuid
 
-from flask.ext.restful import Resource, reqparse, current_app
+# Third-Party modules
+from flask_restful import Resource
+from flask_restful import reqparse
+from flask_restful import fields
+from flask_restful import marshal_with
+from flask_restful import current_app
 
-from api.documents import Comment, HammockLocation
+# Project specific modules
+from api.models import db, Comment, HammockLocation
 from api.utils import abort_not_exist, require_login
 
 
 class CommentResource(Resource):
     """Comment Resource class"""
+
+    comment_fields = {
+        'id': fields.String(attribute='uuid'),
+        'text': fields.String,
+        'user_id': fields.String(attribute='user_uuid'),
+        'location_id': fields.String(attribute='location_uuid'),
+        'date_created': fields.DateTime
+    }
 
     def __init__(self):
         self.put_parser = self.setup_put_parser()
@@ -29,10 +47,12 @@ class CommentResource(Resource):
 
     @require_login
     def get(self, user, location_uuid):
-        current_app.logger.debug(user.to_json())
-        location = HammockLocation.objects(uuid=location_uuid).first()
+        current_app.logger.debug(repr(user))
+        location = HammockLocation.query.filter_by(uuid=location_uuid).first()
         if location is None:
             abort_not_exist(location_uuid, 'Location')
+
+
 
         encoded_comments = []
         for comment in location.comments:
@@ -42,29 +62,31 @@ class CommentResource(Resource):
 
     @require_login
     def post(self, user):
-        current_app.logger.debug(user.to_json())
+        current_app.logger.debug(repr(user))
         parsed_args = self.post_parser.parse_args()
 
         comment = Comment(text=parsed_args['text'],
                           location_uuid=parsed_args['location_id'],
-                          user_uuid=user.uuid,
-                          uuid=str(uuid.uuid4()))
+                          user_uuid=user.uuid)
 
-        HammockLocation.objects(
-            uuid=parsed_args['location_id']).update_one(push__comments=comment)
+        location = HammockLocation.query.filter_by(
+            uuid=parsed_args['location_id'])
+        # Push comment onto this location
 
-        return comment.to_json()
+        return comment
 
     @require_login
     def put(self, user, comment_id=None):
-        current_app.logger.debug(user.to_json())
+        current_app.logger.debug(repr(user))
         parsed_args = self.put_parser.parse_args()
 
-        comment = Comment.objects(uuid=comment_id).first()
+        comment = Comment.query.filter_by(uuid=comment_id).first()
         if comment is None:
             abort_not_exist(comment_id, 'Comment')
 
-        comment.update(text=parsed_args['text'])
-        comment.save()
+        comment.text = parsed_args['text']
 
-        return comment.to_json()
+        db.session.add(user)
+        db.session.commit()
+
+        return comment

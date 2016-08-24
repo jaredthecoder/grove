@@ -8,4 +8,4 @@ Crowd-sourced hammock locations.
 ### Architecture Overview:
 - Python
 - Flask
-- MongoDB
+- PostgreSQL
