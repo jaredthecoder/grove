@@ -3,7 +3,7 @@
 
 from flask.ext.restful import Resource, reqparse, current_app
 
-from api.documents import HammockLocation
+from api.models import HammockLocation
 from api.utils import abort_not_exist, require_login
 
 import uuid
@@ -39,7 +39,7 @@ class LocationResource(Resource):
     @require_login
     def get(self, user, location_uuid=None):
         current_app.logger.debug(user.to_json())
-        location = HammockLocation.objects(uuid=location_uuid).first()
+        location = HammockLocation.all(uuid=location_uuid).first()
         if location is None:
             abort_not_exist(location_uuid, 'HammockLocation')
         return location.to_json()
@@ -50,8 +50,8 @@ class LocationResource(Resource):
         parsed_args = self.post_parser.parse_args()
         location = HammockLocation(title=parsed_args['title'],
                                    capacity=parsed_args['capacity'],
-                                   loc=[parsed_args['latitude'],
-                                        parsed_args['longitude']],
+                                   latitude=parsed_args['latitude'],
+                                   longitude=parsed_args['longitude'],
                                    description=parsed_args['description'],
                                    user_uuid=user.uuid,
                                    photo=parsed_args['photo'],

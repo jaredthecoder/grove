@@ -1,4 +1,9 @@
-"""LoginResource.py - contains the code for the /login API endpoint."""
+"""LoginResource.py - contains the code for the /login API endpoint.
+
+
+This is extremely hacky code at times simply because of how much of a pain
+it is to work with Facebook's Login API.
+"""
 
 # Python standard library
 import json
@@ -10,12 +15,13 @@ import requests
 from flask import request, redirect, session, current_app, abort
 from flask.ext.restful import Resource
 
+# Project modules
 from api.utils import social_config
-from api.documents import User
+from api.models import User
 
 
 class LoginResource(Resource):
-    """Resource for handling logins"""
+    """Resource for handling logins from Facebook."""
 
     def get(self, provider_name):
         redirect_uri = 'https://grove-api.herokuapp.com/login/facebook/callback'
@@ -46,13 +52,13 @@ class FacebookLoginCallbackResource(Resource):
         try:
             data = json.loads(resp.text)
         except ValueError:
-            current_app.logger.error('could not load data')
+            current_app.logger.error('Could not load data.')
             return None
 
         if 'id' in data:
             return data['id']
         else:
-            current_app.logger.error('id not in data')
+            current_app.logger.error('ID not in data.')
             return None
 
     def get_user_data(self, user_id, access_token):
@@ -70,7 +76,7 @@ class FacebookLoginCallbackResource(Resource):
             data = json.loads(resp.text)
         except ValueError:
             current_app.logger.error(
-                'Loading json data for getting user data failed')
+                'Loading json data for getting user data failed.')
             return None
 
         if 'id' in data:
@@ -83,7 +89,7 @@ class FacebookLoginCallbackResource(Resource):
                 self.get_canonical_facebook_profile_pic_url(user_id)
         else:
             current_app.logger.error(
-                'User id was blank, returning None from get user data')
+                'User id was blank, returning None from get user data.')
             return None
 
         return user_data
@@ -118,12 +124,14 @@ class FacebookLoginCallbackResource(Resource):
                     data = json.loads(resp.text)
                     current_app.logger.error('Data: ' + str(data))
                 except ValueError:
+                    # Deeplink to iOS app
                     return redirect('grove://login_error?' +
                                     'message=unable+to+load+json+i' +
                                     'from+access+token+validation')
 
                 access_token = data['access_token']
                 user_id = self.validate_token(access_token)
+
                 if user_id is not None:
                     existing_user = User.objects(facebook_id=user_id).first()
                     if existing_user is None:
@@ -144,6 +152,7 @@ class FacebookLoginCallbackResource(Resource):
 
                         new_user.save()
 
+                        # Deeplink to iOS App
                         return redirect('grove://signup/' +
                                         '{id}/{auth_token}?first_name={'
                                         'first_name}&last_name={'
@@ -155,6 +164,7 @@ class FacebookLoginCallbackResource(Resource):
                                         '&photo={photo}'.format(
                                             photo=new_user.photo))
                     else:
+                        # Deeplink to iOS App
                         return redirect('grove://login/' +
                                         '{id}/{auth_token}?first_name={'
                                         'first_name}&last_name={'
@@ -167,9 +177,9 @@ class FacebookLoginCallbackResource(Resource):
                                             photo=existing_user.photo))
             else:
                 current_app.logger.error(
-                    'session state does not match what is' +
-                    'in session request')
+                    'Session state does not match what is' +
+                    'in session request.')
                 abort(401)
         else:
-            current_app.logger.error('State not in session')
+            current_app.logger.error('State not in session.')
             abort(401)

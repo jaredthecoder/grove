@@ -1,15 +1,23 @@
-"""utils.py - Module containing various utility functions"""
+# -*- coding: utf-8 -*-
 
+
+"""Module containing various utility functions"""
+
+
+# Python standard libraries
 import os
 import urllib.request
 
+# Third-Party modules
 from flask.ext.restful import abort, current_app
 from flask import request
 
-from api.documents import User
+# Project specific modules
+from api.models import User
 
 
 def parse_auth_header(auth_header):
+    """Parse the authentication header sent on authenticated requests."""
     if auth_header is None:
         return None
     try:
@@ -24,6 +32,7 @@ def parse_auth_header(auth_header):
 
 
 def require_login(func):
+    """Decorator function that checks if the current user is logged in."""
     def new_func(*args, **kwargs):
         auth_opts = parse_auth_header(request.headers.get('Authorization'))
         try:
@@ -31,7 +40,7 @@ def require_login(func):
         except (KeyError, TypeError) as e:
             abort(401)
             return
-        user = User.objects(auth_token=token)
+        user = User.query.filter_by(auth_token=token).first()
         if len(user) > 1:
             current_app.logger.error(
                 'More than one user with id: {}'.format(token))
@@ -57,15 +66,21 @@ social_config = {
 
 
 def abort_not_exist(_id, _type):
+    """Abort the request if the entity does not exist."""
+
     abort(404,
           message="{} {} does not exist. Please try again with a different {}".format(_type, _id, _type))
 
 
 def abort_cannot_update(_id, _type):
+    """Abort the request if the entity cannot be updated."""
+
     abort(400,
           message="Cannot update {} {}. Please try again.".format(_type, _id))
 
 
 def abort_cannot_create(_type):
+    """Abort the request if the entity cannot be created."""
+
     abort(400,
           message='Cannot create {} because you have not supplied the proper parameters.'.format(_type))

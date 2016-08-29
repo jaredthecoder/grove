@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
+
+
 """Application configuration."""
 
+
+# Python standard libraries
 import os
 
 
@@ -12,10 +16,9 @@ class Config(object):
     APP_DIR = os.path.abspath(os.path.dirname(__file__))
     PROJECT_ROOT = os.path.abspath(os.path.join(APP_DIR, os.pardir))
     SECRET_KEY = str(os.environ.get('SECRET_KEY'))
-
-    # Cloud Settings
-    MONGODB_DB = str(os.environ.get('MONGODB_DB'))
-    MONGODB_HOST = str(os.environ.get('MONGODB_HOST'))
+    SQLALCHEMY_DATABASE_URI = str(os.environ['DATABASE_URL'])
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SQLALCHEMY_ECHO = False
 
 
 class ProdConfig(Config):
@@ -34,13 +37,6 @@ class DevConfig(Config):
     TESTING = True
     CACHE_TYPE = 'simple'
     BCRYPT_LOG_ROUNDS = 4
-
-    # Local Settings
-    MONGODB_DB = os.environ.get('GROVE_DB', 'grove')
-    MONGODB_HOST = os.environ.get('GROVE_HOST', 'localhost')
-    MONGODB_PORT = os.environ.get('GROVE_PORT', 27017)
-    MONGODB_USERNAME = os.environ.get('GROVE_USERNAME', 'grove')
-    MONGODB_PASSWORD = os.environ.get('GROVE_PASSWORD', 'grove')
 
 
 class TestConfig(Config):
