@@ -27,6 +27,7 @@ class ProdConfig(Config):
     ENV = 'prod'
     DEBUG = False
     TESTING = False
+    BCRYPT_LOG_ROUNDS = 12
 
 
 class DevConfig(Config):
@@ -34,7 +35,7 @@ class DevConfig(Config):
 
     ENV = 'dev'
     DEBUG = True
-    TESTING = True
+    TESTING = False
     CACHE_TYPE = 'simple'
     BCRYPT_LOG_ROUNDS = 4
 
@@ -42,7 +43,9 @@ class DevConfig(Config):
 class TestConfig(Config):
     """Test configuration."""
 
+    ENV = 'test'
     TESTING = True
     DEBUG = True
+    CACHE_TYPE = 'simple'
     BCRYPT_LOG_ROUNDS = 4
 

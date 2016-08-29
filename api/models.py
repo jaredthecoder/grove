@@ -15,30 +15,29 @@ from flask_login import UserMixin
 from flask_login import AnonymousUserMixin
 
 # Project specific modules
-from api.database import Column
 from api.database import Model
 from api.database import SurrogatePK
-from api.database import Integer
-from api.database import ForeignKey
 from api.database import db
-from api.database import relationship
 from api.database import ModelSerializer
 from api.settings import Config
 
 
 def gen_uuid():
+    """Generate a UUID"""
     return binascii.hexlify(os.urandom(16)).decode('utf-8')
 
 
 class Anonymous(AnonymousUserMixin):
+    """Required for UserMixin which adds auth tokens"""
+
     def __init__(self):
         self.username = None
 
 
 class User(UserMixin, SurrogatePK, Model, ModelSerializer):
-    """User model."""
+    """User model"""
 
-    __tablename__ = 'user'
+    __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     uuid = db.Column(db.String)
@@ -68,7 +67,8 @@ class User(UserMixin, SurrogatePK, Model, ModelSerializer):
 
     def __init__(self, photo=None, first_name=None, last_name=None,
                  email=None, facebook_id=None, facebook_token=None):
-        """ Define what will be loaded up on model instantiation here """
+        """Define what will be loaded up on model instantiation here"""
+
         self.uuid = gen_uuid()
         self.facebook_id = facebook_id
         self.facebook_access_token = facebook_token
@@ -94,39 +94,49 @@ class HammockLocation(SurrogatePK, Model, ModelSerializer):
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
     description = db.Column(db.String)
-    user_uuid = Column(Integer, ForeignKey('user.id'))
+    user_uuid = db.Column(db.Integer, db.ForeignKey('users.id'))
+
     date_created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-    comments = relationship('Comment', back_populates='hammock_location')
+    comments = db.relationship('Comment', backref='location_comment',
+                               lazy='dynamic',
+                               foreign_keys='[Comment.location_uuid]')
 
-    def __init__(self, title=None, capcity=None, photo=None, latitude=None,
-                 longitude=None, description=None, user_uuid=None):
+    def __init__(self, title=None, capacity=None, photo=None, latitude=None,
+                 longitude=None, description=None, user_uuid=None, comments=[]):
+        """Define what will be loaded up on model instantiation here"""
+
         self.uuid = gen_uuid()
         self.title = title
-        self.capacity = capcity
+        self.capacity = capacity
         self.photo = photo
         self.latitude = latitude
         self.longitude = longitude
         self.description = description
         self.user_uuid = user_uuid
+        self.comments = comments
 
     def __repr__(self):
         return '<HammockLocation {}:{}>'.format(self.uuid, self.title)
 
 
 class Comment(SurrogatePK, Model, ModelSerializer):
-    """Comment model."""
+    """Comment model"""
 
     __tablename__ = 'comment'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     uuid = db.Column(db.String)
     text = db.Column(db.String)
-    user_uuid = Column(Integer, ForeignKey('user.id'))
-    location_uuid = Column(Integer, ForeignKey('hammock_location.id'))
+    user_uuid = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
+    location_uuid = db.Column(db.Integer, db.ForeignKey('hammock_location.id'), index=True)
+
     date_created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, text=None, user_uuid=None, location_uuid=None):
+        """Define what will be loaded up on model instantiation here"""
+
+        self.uuid = gen_uuid()
         self.text = text
         self.user_uuid = user_uuid
         self.location_uuid = location_uuid

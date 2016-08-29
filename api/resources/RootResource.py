@@ -1,11 +1,14 @@
-"""RootResource.py - contains the code for the / (root) API endpoint."""
+# -*- coding:utf-8 -*-
+
+
+"""HTTP Resources for the root endpoint in the API."""
 
 
 from flask.ext.restful import Resource
 
 
 class RootResource(Resource):
-    """Root Resource Class"""
+    """Root Resource of the API"""
 
     def __init__(self):
         pass

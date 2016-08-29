@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-"""HTTP resources for the comment entites."""
+"""HTTP resources for the comment entities."""
 
-
-# Python standard libraries
-import uuid
 
 # Third-Party modules
 from flask_restful import Resource
@@ -20,7 +17,7 @@ from api.utils import abort_not_exist, require_login
 
 
 class CommentResource(Resource):
-    """Comment Resource class"""
+    """Class for handling Comment model API interactions"""
 
     comment_fields = {
         'id': fields.String(attribute='uuid'),
@@ -45,6 +42,7 @@ class CommentResource(Resource):
         parser.add_argument('text', required=True, type=str)
         return parser
 
+    @marshal_with(comment_fields)
     @require_login
     def get(self, user, location_uuid):
         current_app.logger.debug(repr(user))
@@ -52,14 +50,11 @@ class CommentResource(Resource):
         if location is None:
             abort_not_exist(location_uuid, 'Location')
 
+        comments = location.comments
 
+        return comments
 
-        encoded_comments = []
-        for comment in location.comments:
-            encoded_comments.append(comment.to_json())
-
-        return encoded_comments
-
+    @marshal_with(comment_fields)
     @require_login
     def post(self, user):
         current_app.logger.debug(repr(user))
@@ -70,11 +65,16 @@ class CommentResource(Resource):
                           user_uuid=user.uuid)
 
         location = HammockLocation.query.filter_by(
-            uuid=parsed_args['location_id'])
-        # Push comment onto this location
+            uuid=parsed_args['location_id']).first()
+        location.comments.append(comment)
+
+        db.session.add(comment)
+        db.session.add(location)
+        db.session.commit()
 
         return comment
 
+    @marshal_with(comment_fields)
     @require_login
     def put(self, user, comment_id=None):
         current_app.logger.debug(repr(user))

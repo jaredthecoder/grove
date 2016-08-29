@@ -3,6 +3,7 @@
 
 """This file contains the application factory for making instances of the API"""
 
+
 # Python standard library
 import os
 
@@ -16,7 +17,7 @@ from api.settings import ProdConfig
 
 
 def create_app(config_object=ProdConfig, static_path=''):
-    """An application factory for this API."""
+    """An application factory for this API"""
 
     app = Flask(__name__, static_url_path=static_path)
 
@@ -35,7 +36,7 @@ def create_app(config_object=ProdConfig, static_path=''):
 
 
 def register_endpoints():
-    """Register API endpoints with resources."""
+    """Register API endpoints with resources"""
 
     api = Api()
 
@@ -65,21 +66,21 @@ def register_endpoints():
 
 
 def register_api(app):
-    """Register API endpoints and Flask-RESTful instance."""
+    """Register API endpoints and Flask-RESTful instance"""
 
     api = register_endpoints()
     api.init_app(app)
 
 
 def register_database(app):
-    """Register database and the migrate command."""
+    """Register database and the migrate command"""
 
     db.init_app(app)
     migrate.init_app(app)
 
 
 def register_extensions(app):
-    """Register Flask extensions."""
+    """Register Flask extensions"""
 
     bcrypt.init_app(app)
     cache.init_app(app)

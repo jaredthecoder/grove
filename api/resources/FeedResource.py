@@ -18,7 +18,7 @@ from api.utils import require_login
 
 
 class FeedResource(Resource):
-    """Feed Resource Class"""
+    """Class for handling the main app feed"""
 
     comment_fields = {
         'id': fields.String(attribute='uuid'),
@@ -44,6 +44,8 @@ class FeedResource(Resource):
         self.get_parser = self.setup_get_parser()
 
     def setup_get_parser(self):
+        """Setup the request parser for GET"""
+
         parser = reqparse.RequestParser()
         parser.add_argument('latitude', location='args',
                             required=True, type=float)
@@ -56,7 +58,9 @@ class FeedResource(Resource):
     @marshal_with(loc_fields)
     @require_login
     def get(self, user):
-        current_app.logger.debug(user.to_json())
+        """Get the feed of locations in an area"""
+
+        current_app.logger.debug(repr(user))
 
         parser_args = self.get_parser.parse_args()
 

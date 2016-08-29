@@ -1,16 +1,43 @@
-"""CommentResource.py"""
+# -*- coding: utf-8 -*-
 
 
-from flask.ext.restful import Resource, reqparse, current_app
+"""HTTP resources for the hammock location entities."""
 
-from api.models import HammockLocation
+
+# Third-Party modules
+from flask_restful import Resource
+from flask_restful import reqparse
+from flask_restful import fields
+from flask_restful import marshal_with
+from flask_restful import current_app
+
+# Project specific modules
+from api.models import db, Comment, HammockLocation
 from api.utils import abort_not_exist, require_login
-
-import uuid
 
 
 class LocationResource(Resource):
-    """Location Resource class"""
+    """Class for handling HammockLocation model API interactions"""
+
+    comment_fields = {
+        'id': fields.String(attribute='uuid'),
+        'text': fields.String,
+        'user_id': fields.String(attribute='user_uuid'),
+        'location_id': fields.String(attribute='location_uuid'),
+        'date_created': fields.DateTime
+    }
+
+    loc_fields = {
+        'id': fields.String(attribute='uuid'),
+        'user_id': fields.String(attribute='user_uuid'),
+        'title': fields.String,
+        'capacity': fields.String,
+        'description': fields.String,
+        'latitude': fields.Float,
+        'longitude': fields.Float,
+        'date_created': fields.DateTime,
+        'comments': fields.List(fields.Nested(comment_fields))
+    }
 
     def __init__(self):
         self.put_parser = self.setup_put_parser()
@@ -36,34 +63,42 @@ class LocationResource(Resource):
         parser.add_argument('description', default=None, type=str)
         return parser
 
+    @marshal_with(loc_fields)
     @require_login
     def get(self, user, location_uuid=None):
-        current_app.logger.debug(user.to_json())
-        location = HammockLocation.all(uuid=location_uuid).first()
+        current_app.logger.debug(repr(user))
+
+        location = HammockLocation.query.filter_by(uuid=location_uuid).first()
         if location is None:
             abort_not_exist(location_uuid, 'HammockLocation')
-        return location.to_json()
 
+        return location
+
+    @marshal_with(loc_fields)
     @require_login
     def post(self, user):
-        current_app.logger.debug(user.to_json())
+        current_app.logger.debug(repr(user))
+
         parsed_args = self.post_parser.parse_args()
+
         location = HammockLocation(title=parsed_args['title'],
                                    capacity=parsed_args['capacity'],
                                    latitude=parsed_args['latitude'],
                                    longitude=parsed_args['longitude'],
                                    description=parsed_args['description'],
                                    user_uuid=user.uuid,
-                                   photo=parsed_args['photo'],
-                                   uuid=str(uuid.uuid4()))
+                                   photo=parsed_args['photo'])
 
-        location.save()
+        db.session.add(location)
+        db.session.commit()
 
-        return location.to_json()
+        return location
 
+    @marshal_with(loc_fields)
     @require_login
     def put(self, user, location_id=None):
-        current_app.logger.debug(user.to_json())
+        current_app.logger.debug(repr(user))
+
         parsed_args = self.put_parser.parse_args()
 
         location = HammockLocation.objects(uuid=location_id).first()
