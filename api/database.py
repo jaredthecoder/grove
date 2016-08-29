@@ -6,20 +6,11 @@ for database functionality with SQLAlchemy."""
 
 
 # Third-Party modules
-from sqlalchemy.orm import relationship
 from sqlalchemy.inspection import inspect
 
 # Project specific modules
 from api.compat import basestring
 from api.extensions import db
-
-
-# Alias common SQLAlchemy names
-Column = db.Column
-relationship = relationship
-Table = db.Table
-ForeignKey = db.ForeignKey
-Integer = db.Integer
 
 
 class ModelSerializer(object):

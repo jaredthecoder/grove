@@ -4,15 +4,17 @@
 
 """Management script."""
 
-
+# Python Standard libraries
 import os
 from glob import glob
 from subprocess import call
 
+# 3rd-Party modules
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Command, Manager, Option, Server, Shell
 from flask_script.commands import Clean, ShowUrls
 
+# Project specific modules
 from api.app import create_app
 from api.database import db
 from api.settings import DevConfig, ProdConfig

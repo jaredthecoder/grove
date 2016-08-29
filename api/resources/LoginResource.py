@@ -1,9 +1,13 @@
-"""LoginResource.py - contains the code for the /login API endpoint.
+# -*- coding: utf-8 -*-
+
+
+"""Contains the code for logging in a user.
 
 
 This is extremely hacky code at times simply because of how much of a pain
 it is to work with Facebook's Login API.
 """
+
 
 # Python standard library
 import json
@@ -12,16 +16,20 @@ import uuid
 
 # Third Party modules
 import requests
-from flask import request, redirect, session, current_app, abort
-from flask.ext.restful import Resource
+from flask import request
+from flask import redirect
+from flask import session
+from flask import current_app
+from flask import abort
+from flask_restful import Resource
 
 # Project modules
 from api.utils import social_config
-from api.models import User
+from api.models import db, User
 
 
 class LoginResource(Resource):
-    """Resource for handling logins from Facebook."""
+    """Resource for handling logins from Facebook"""
 
     def get(self, provider_name):
         redirect_uri = 'https://grove-api.herokuapp.com/login/facebook/callback'
@@ -37,6 +45,7 @@ class LoginResource(Resource):
 
 
 class FacebookLoginCallbackResource(Resource):
+    """Resource called on successful Facebook Login"""
 
     def get_canonical_facebook_profile_pic_url(self, user_id):
         resp = requests.get('http://graph.facebook.com/' +
@@ -133,7 +142,7 @@ class FacebookLoginCallbackResource(Resource):
                 user_id = self.validate_token(access_token)
 
                 if user_id is not None:
-                    existing_user = User.objects(facebook_id=user_id).first()
+                    existing_user = User.query.filter_by(facebook_id=user_id).first()
                     if existing_user is None:
                         user_data = self.get_user_data(user_id, access_token)
                         if not user_data:
@@ -145,12 +154,13 @@ class FacebookLoginCallbackResource(Resource):
                                         last_name=user_data['last_name'],
                                         email=user_data['email'],
                                         photo=user_data['profile_photo_url'],
-                                        facebook_access_token=access_token,
-                                        uuid=str(uuid.uuid4()))
+                                        facebook_token=access_token)
+
                         auth_token = new_user.generate_auth_token()
                         new_user.auth_token = auth_token.decode('ascii')
 
-                        new_user.save()
+                        db.session.add(new_user)
+                        db.session.commit()
 
                         # Deeplink to iOS App
                         return redirect('grove://signup/' +

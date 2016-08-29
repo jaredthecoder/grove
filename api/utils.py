@@ -17,7 +17,8 @@ from api.models import User
 
 
 def parse_auth_header(auth_header):
-    """Parse the authentication header sent on authenticated requests."""
+    """Parse the authentication header sent on authenticated requests"""
+
     if auth_header is None:
         return None
     try:
@@ -32,7 +33,8 @@ def parse_auth_header(auth_header):
 
 
 def require_login(func):
-    """Decorator function that checks if the current user is logged in."""
+    """Decorator function that checks if the current user is logged in"""
+
     def new_func(*args, **kwargs):
         auth_opts = parse_auth_header(request.headers.get('Authorization'))
         try:
