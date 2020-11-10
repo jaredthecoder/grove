@@ -9,7 +9,7 @@ ecdsa==0.13
 email-validator==1.0.0
 execnet==1.4.1
 fake-factory==0.5.3
-Flask==0.10.1
+Flask==1.0
 Flask-Bcrypt==0.7.1
 Flask-Cache==0.13.1
 Flask-Login==0.3.2
