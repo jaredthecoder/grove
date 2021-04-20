@@ -33,7 +33,7 @@ mixer==5.2.2
 oauthlib==1.0.3
 paramiko==1.15.2
 passlib==1.6.5
-py==1.4.30
+py==1.10.0
 pycparser==2.14
 pycrypto==2.6.1
 pymongo==3.2.2
