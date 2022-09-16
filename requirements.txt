@@ -27,7 +27,7 @@ gunicorn==19.3.0
 idna==2.0
 itsdangerous==0.24
 Jinja2==2.8
-Mako==1.0.2
+Mako==1.2.2
 MarkupSafe==0.23
 mixer==5.2.2
 oauthlib==1.0.3
